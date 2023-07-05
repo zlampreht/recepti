@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recepti</title>
+  <style>
+    * {
+      font-family: "Roboto", sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    ::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background-color: rgb(245, 245, 245);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      background-color: #ffffff;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+      background-color: #989898;
+    }
+
+    boday {
+      background-color: rgb(240, 240, 240);
+    }
+
+    div.container {
+      flex-direction: column;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 20px;
+      gap: 20px;
+    }
+
+    div.card {
+      transition: opacity 0.1s ease-out;
+      background-color: white;
+      width: 1024px;
+      height: 300px;
+      display: flex;
+      justify-content: flex-start;
+      border-radius: 25px;
+      gap: 10px;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    }
+
+    div.card.fade-out {
+      opacity: 0;
+
+    }
+
+
+
+    img {
+      height: 100%;
+      border-radius: 25px;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+    }
+
+    div.navbar {
+      background-color: rgb(50, 50, 50);
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: sticky;
+      top: 0px;
+      padding: 15px;
+    }
+
+    div.navbar-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 1024px;
+    }
+
+    input {
+      padding: 7px;
+      border-radius: 25px;
+      border: 1px solid rgb(170, 170, 170);
+
+    }
+
+    h1 {
+      color: white;
+    }
+
+
+    button {
+      background-color: rgb(124, 86, 226);
+      color: white;
+      padding: 10px;
+      border-radius: 25px;
+      border: 0;
+      font-weight: bold;
+      cursor: pointer;
+      width: 150px;
+
+    }
+
+    div.modal-content {
+      position: fixed;
+      left: 0px;
+      top: 0px;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(50, 50, 50, 0.5);
+      z-index: 10;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    div.modal {
+      padding: 10px;
+      background-color: white;
+      border-radius: 25px;
+      width: 1024px;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+    }
+
+    div.modal-vsebina {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    div.header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+
+    div.header span {
+      cursor: pointer;
+    }
+
+    div.card-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 15px;
+    }
+
+    .card .notes {
+      height: 100%;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="modal-content" id="modal">
+    <div class="modal">
+      <div class="header">
+        <h2>Dodaj recept</h2>
+        <span onclick="closeModal()">X</span>
+      </div>
+      <form id="add-recepie">
+        <div class="modal-vsebina">
+          <label>Naziv recepta</label>
+          <input name="naziv" quired minlength="5" placeholder="Naziv recepta" />
+          <label>Povezava do slike</label>
+          <input name="link" required minlength="5" placeholder="Povezava do slike" />
+          <label>Opis</label>
+          <input name="notes" required minlength="5" placeholder="opis..." />
+        </div>
+        <button>dodaj</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="navbar">
+    <div class="navbar-content">
+      <h1>Recepti</h1>
+      <div>
+        <button onclick="openModal()">Dodaj recept</button>
+        <input id="search" placeholder="išči..." />
+      </div>
+    </div>
+  </div>
+  <div class="container" id="list">
+
+
+    <div class="card">
+      <img
+        src="https://www.wholesomeyum.com/wp-content/uploads/2017/03/wholesomeyum-Low-Carb-Keto-Pancakes-Recipe-21.jpg">
+      <div class="card-content">
+
+        <div class="header">
+          <h2> Palučinke1</h2>
+          <span onclick="deleteRecepie(this)">X</span>
+        </div>
+        <div class="notes">
+          <p>V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo.
+            V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <img
+        src="https://www.wholesomeyum.com/wp-content/uploads/2017/03/wholesomeyum-Low-Carb-Keto-Pancakes-Recipe-21.jpg">
+      <div class="card-content">
+
+        <div class="header">
+          <h2> Palučinke4</h2>
+          <span onclick="deleteRecepie(this)">X</span>
+        </div>
+        <div class="notes">
+          <p>V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo.
+            V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img
+        src="https://www.wholesomeyum.com/wp-content/uploads/2017/03/wholesomeyum-Low-Carb-Keto-Pancakes-Recipe-21.jpg">
+      <div class="card-content">
+
+        <div class="header">
+          <h2> Palučinke3</h2>
+          <span onclick="deleteRecepie(this)">X</span>
+        </div>
+        <div class="notes">
+          <p>V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo.
+            V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img
+        src="https://www.wholesomeyum.com/wp-content/uploads/2017/03/wholesomeyum-Low-Carb-Keto-Pancakes-Recipe-21.jpg">
+      <div class="card-content">
+
+        <div class="header">
+          <h2> Palučinke2</h2>
+          <span onclick="deleteRecepie(this)">X</span>
+        </div>
+        <div class="notes">
+          <p>V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo.
+            V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTziN0htZQ0sUFTCWVGN8iYHUajYjSeAOGgng&usqp=CAU">
+      <div class="card-content">
+
+        <div class="header">
+          <h2> Ćueuapi</h2>
+          <span onclick="deleteRecepie(this)">X</span>
+        </div>
+        <div class="notes">
+          <p>V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo.
+            V skledo stresemo moko. Dodamo soli in sladkor, dobro premešamo in na sredini naredimo jamico. V jamico
+            ubijemo jajci ter prilijemo približno 50 ml mleka in eno žlico olja.
+
+            Sestavine v jamici pričnemo mešati z ročno metlico ali mešalnikom in med mešanjem postopoma zajemamo moko
+            okoli jamice. Mešamo tako dolgo, da v zmes vmešamo vso moko (po potrebi prilijemo še malo mleka) ter dobimo
+            gladko in gosto zmes brez grudic.
+
+            Nato med nenehnim mešanjem v tankem curku v skledo počasi vlivamo preostalo mleko. Ko prilijemo vse mleko in
+            dobimo gladko in tekoče testo, prenehamo z mešanjem. Masa mora biti tekoča, vendar ne sme biti vodena. Če je
+            vodena, dodamo še malo moke.
+
+            Pripravljeno maso pred peko pustimo počivati 15 do 30 minut, da lahko škrobna zrnca v tekočini nabreknejo.
+            Pred peko jo obvezno še enkrat dobro premešamo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+
+
+
+
+
+<script>
+  var iskanje = document.getElementById('search');
+  var dodajForm = document.getElementById("add-recepie")
+  var modal = document.getElementById("modal");
+  var list = document.getElementById("list");
+  window.addEventListener("load", renderList);
+
+
+  iskanje.addEventListener('keyup', function (event) {
+
+
+    var vrednostIskanja = event.target.value.toLowerCase();
+    var recepti = document.getElementsByClassName("card");
+    for (var recept of recepti) {
+      var nazivRecepta = recept.getElementsByTagName("h2")[0].innerHTML.toLowerCase();
+      var prikazi = nazivRecepta.includes(vrednostIskanja);
+      if (prikazi) {
+        recept.style.display = "flex";
+      } else {
+        recept.style.display = "none";
+      }
+    }
+
+  });
+  dodajForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    var naziv = event.srcElement.elements["naziv"].value;
+    var link = event.srcElement.elements["link"].value;
+    var notes = event.srcElement.elements["notes"].value;
+
+    list.innerHTML += `
+        
+    <div class="card">
+      <img
+        src="${link}" 
+        />
+         <div class="card-content">
+           <div class="header">
+             <h2>${naziv}</h2>
+            <span onclick="deleteRecepie(this)">X</span>
+           </div>
+          <div class="notes">
+            ${notes}
+        </div>
+      </div>
+      </div>
+      
+      `;
+
+    event.srcElement.reset();
+    closeModal();
+    saveList();
+  });
+
+
+  function deleteRecepie(element) {
+    var potrdi = confirm("Ali ste prepricani da zelite izbrisati recept?");
+    if (potrdi) {
+      var kartica = element.parentNode.parentNode.parentNode;
+      kartica.classList.add("fade-out");
+      setTimeout(function () {
+        kartica.remove();
+        saveList();
+      }, 200);
+    }
+  }
+
+  function openModal() {
+    modal.style.display = "flex";
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  function saveList() {
+    localStorage.setItem("list", list.innerHTML);
+  }
+
+  function renderList() {
+    var novList = localStorage.getItem("list");
+    if (novList) {
+      list.innerHTML = novList;
+      var recepti = document.getElementsByClassName("card");
+      for (var recept of recepti) {
+        recept.style.display = "flex";
+      }
+    }
+  }
+</script>
+
+</html>
